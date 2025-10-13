@@ -1,0 +1,66 @@
+-- Private lobby / owner-only server
+-- Whitelist by username (converted to UserId at startup) so name changes won't let someone bypass it.
+
+local whitelistNames = {
+	-- Add usernames here (case-sensitive)
+	"Testaccount5th5",    -- replace with your Roblox username
+	"Error101_s",      -- added as requested
+}
+
+local whitelistIds = {}  -- populated below
+
+-- Try to convert each username to a UserId (GetUserIdFromNameAsync can error if the name is invalid)
+for _, name in ipairs(whitelistNames) do
+	local ok, userIdOrErr = pcall(function()
+		return game.Players:GetUserIdFromNameAsync(name)
+	end)
+	if ok and type(userIdOrErr) == "number" then
+		whitelistIds[userIdOrErr] = true
+	else
+		warn("Could not resolve whitelist name:", name, "->", userIdOrErr)
+	end
+end
+
+-- Optional: always allow the game's creator (place owner) even if not in whitelist.
+-- If you don't want this, set allowCreator = false
+local allowCreator = true
+local creatorId = game.CreatorId or 0
+
+-- Player join handler
+game.Players.PlayerAdded:Connect(function(player)
+	-- allow if UserId is in resolved whitelist
+	if whitelistIds[player.UserId] then
+		print("Welcome to private server:", player.Name)
+		return
+	end
+
+	-- optionally allow the game creator
+	if allowCreator and player.UserId == creatorId then
+		print("Creator joined:", player.Name)
+		return
+	end
+
+	-- not allowed -> politely remove
+	local reason = "This server is private. If you believe this is a mistake, contact an admin."
+	-- small delay so join completes and a message shows up to the player (optional)
+	wait(0.5)
+	pcall(function()
+		player:Kick(reason)
+	end)
+end)
+
+-- (Optional) Command to add someone during runtime by name
+local function addToWhitelistByName(name)
+	local ok, id = pcall(function() return game.Players:GetUserIdFromNameAsync(name) end)
+	if ok and type(id) == "number" then
+		whitelistIds[id] = true
+		print("Added to whitelist:", name, id)
+		return true
+	else
+		warn("Failed to add to whitelist name:", name, id)
+		return false
+	end
+end
+
+-- Example usage (uncomment to add another player at runtime)
+-- addToWhitelistByName("SomeOtherPlayer")
