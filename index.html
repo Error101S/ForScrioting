@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LauUCodes</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <header class="main-menu">
+      <h1>LauUCodes</h1>
+      <div class="status" id="statusText">Checking sign-in status…</div>
+    </header>
+
+    <main class="content">
+      <section id="signedOut" class="card hidden">
+        <h2>Sign in to continue</h2>
+        <p>
+          Use your Google account to sign in. Your login state is saved in this browser, so
+          next time you open the site you will stay signed in.
+        </p>
+
+        <div
+          id="g_id_onload"
+          data-auto_prompt="false"
+          data-callback="handleCredentialResponse"
+          data-context="signin"
+          data-ux_mode="popup"
+        ></div>
+        <div id="googleButton" class="g_id_signin" data-type="standard" data-size="large"></div>
+      </section>
+
+      <section id="signedIn" class="card hidden">
+        <h2>Welcome back!</h2>
+        <div class="profile">
+          <img id="avatar" alt="Google profile photo" />
+          <div>
+            <p><strong id="fullName">Name</strong></p>
+            <p id="email">email@example.com</p>
+          </div>
+        </div>
+        <button id="signOutBtn" type="button">Sign out</button>
+      </section>
+
+      <section class="card note">
+        <h3>Setup needed once</h3>
+        <p>
+          Replace <code>YOUR_GOOGLE_CLIENT_ID</code> in <code>app.js</code> with your real web
+          OAuth Client ID from Google Cloud Console.
+        </p>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
